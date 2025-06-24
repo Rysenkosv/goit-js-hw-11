@@ -1,15 +1,10 @@
-import axios from 'axios';
 import iziToast from 'izitoast';
 import 'izitoast/dist/css/iziToast.min.css';
 
-import SimpleLightbox from 'simplelightbox';
-import 'simplelightbox/dist/simple-lightbox.min.css';
-
 import { fetchImages } from './js/pixabay-api';
-import { renderGallery, showLoader, hideLoader } from './js/render-functions';
+import { renderGallery, showLoader, hideLoader, clearGallery } from './js/render-functions';
 
 const form = document.querySelector('.form');
-const gallery = document.querySelector('.gallery');
 
 form.addEventListener('submit', handleSubmit);
 
@@ -25,22 +20,20 @@ function handleSubmit(event) {
     });
     return;
   }
-  showLoader();
-  fetchImages(inputValue)
-    .then(response => {
-      const images = response.data.hits;
 
+  clearGallery();
+  showLoader();
+
+  fetchImages(inputValue)
+    .then(images => {
       if (images.length === 0) {
-        gallery.innerHTML = '';
         iziToast.info({
           message: 'Зображень не знайдено.',
           position: 'topRight',
         });
       } else {
-        console.log(images);
         renderGallery(images);
       }
-
       form.reset();
     })
     .catch(error => {
